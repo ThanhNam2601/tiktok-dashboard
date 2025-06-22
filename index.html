@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TikTok Balance Management Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #ff0050;
+            --secondary-color: #00f2ea;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-color: #1f2937;
+            --light-color: #f9fafb;
+            --border-color: #e5e7eb;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--dark-color);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Header */
+        .header {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: var(--primary-color);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+        }
+
+        .header-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 16px;
+        }
+
+        .last-update {
+            color: #6b7280;
+            font-size: 14px;
+        }
+
+        .total-accounts {
+            display: flex;
+            gap: 16px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .account-stat {
+            padding: 8px 12px;
+            border-radius: 6px;
+            background: var(--light-color);
+        }
+
+        /* Stats Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--primary-color);
+        }
+
+        .stat-card.success::before { background: var(--success-color); }
+        .stat-card.warning::before { background: var(--warning-color); }
+        .stat-card.info::before { background: var(--secondary-color); }
+
+        .stat-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .stat-title {
+            font-size: 14px;
+            font-weight: 500;
+            color: #6b7280;
+            text-transform: uppercase;
+        }
+
+        .stat-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: white;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--dark-color);
+            margin-bottom: 8px;
+        }
+
+        .stat-change {
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .stat-change.positive { color: var(--success-color); }
+        .stat-change.negative { color: var(--danger-color); }
+
+        /* Navigation Tabs */
+        .nav-tabs {
+            display: flex;
+            background: white;
+            border-radius: 12px;
+            padding: 8px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            overflow-x: auto;
+        }
+
+        .nav-tab {
+            padding: 12px 24px;
+            border: none;
+            background: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .nav-tab.active {
+            background: var(--primary-color);
+            color: white;
+        }
+
+        .nav-tab:hover:not(.active) {
+            background: var(--light-color);
+        }
+
+        /* Accounts Grid */
+        .accounts-section {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .seller-section {
+            margin-bottom: 32px;
+        }
+
+        .seller-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid var(--border-color);
+        }
+
+        .seller-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--dark-color);
+        }
+
+        .seller-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 14px;
+            color: #6b7280;
+        }
+
+        .accounts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+        }
+
+        .account-card {
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 16px;
+            transition: all 0.2s;
+            cursor: pointer;
+            position: relative;
+        }
+
+        .account-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px -8px rgba(0, 0, 0, 0.15);
+        }
+
+        .account-card.status-active {
+            border-color: var(--success-color);
+            background: #f0fdf4;
+        }
+
+        .account-card.status-warning {
+            border-color: var(--warning-color);
+            background: #fffbeb;
+        }
+
+        .account-card.status-error {
+            border-color: var(--danger-color);
+            background: #fef2f2;
+        }
+
+        .account-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .account-name {
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .status-indicator.active { background: var(--success-color); }
+        .status-indicator.warning { background: var(--warning-color); }
+        .status-indicator.error { background: var(--danger-color); }
+
+        .account-balance {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            margin-bottom: 12px;
+        }
+
+        .balance-item {
+            text-align: center;
+            padding: 8px;
+            border-radius: 4px;
+            background: white;
+        }
+
+        .balance-label {
+            font-size: 11px;
+            color: #6b7280;
+            text-transform: uppercase;
+            margin-bottom: 4px;
+        }
+
+        .balance-value {
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .account-orders {
+            text-align: center;
+            padding: 8px;
+            background: var(--light-color);
+            border-radius: 4px;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .account-updated {
+            font-size: 12px;
+            color: #9ca3af;
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .container {
+                padding: 12px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .header-info {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stat-value {
+                font-size: 2rem;
+            }
+
+            .accounts-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 12px;
+            }
+
+            .nav-tabs {
+                padding: 4px;
+            }
+
+            .nav-tab {
+                padding: 8px 16px;
+                font-size: 14px;
+            }
+        }
+
+        /* Loading Animation */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid #f3f3f3;
+            border-top: 3px solid var(--primary-color);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1><i class="fab fa-tiktok"></i> TikTok Balance Management Dashboard</h1>
+            <div class="header-info">
+                <div class="last-update">
+                    <i class="fas fa-clock"></i> Cập nhật lần cuối: <span id="lastUpdate">20/06/2025 - 14:30</span>
+                </div>
+                <div class="total-accounts">
+                    <div class="account-stat">
+                        <i class="fas fa-store"></i> Tổng tài khoản: <strong>50</strong>
+                    </div>
+                    <div class="account-stat">
+                        <i class="fas fa-check-circle" style="color: var(--success-color);"></i> Hoạt động: <strong>48</strong>
+                    </div>
+                    <div class="account-stat">
+                        <i class="fas fa-exclamation-triangle" style="color: var(--danger-color);"></i> Offline: <strong>2</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+            <div class="stat-card success">
+                <div class="stat-header">
+                    <div class="stat-title">Tổng Paid</div>
+                    <div class="stat-icon" style="background: var(--success-color);">
+                        <i class="fas fa-dollar-sign"></i>
+                    </div>
+                </div>
+                <div class="stat-value">$12,450</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> +5% so với hôm qua
+                </div>
+            </div>
+
+            <div class="stat-card warning">
+                <div class="stat-header">
+                    <div class="stat-title">Tổng Processing</div>
+                    <div class="stat-icon" style="background: var(--warning-color);">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                </div>
+                <div class="stat-value">$8,230</div>
+                <div class="stat-change negative">
+                    <i class="fas fa-arrow-down"></i> -2% so với hôm qua
+                </div>
+            </div>
+
+            <div class="stat-card info">
+                <div class="stat-header">
+                    <div class="stat-title">Tổng On Hold</div>
+                    <div class="stat-icon" style="background: var(--secondary-color);">
+                        <i class="fas fa-pause"></i>
+                    </div>
+                </div>
+                <div class="stat-value">$45,670</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> +12% so với hôm qua
+                </div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-header">
+                    <div class="stat-title">Chi phí Ads</div>
+                    <div class="stat-icon" style="background: var(--primary-color);">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                </div>
+                <div class="stat-value">$2,340</div>
+                <div class="stat-change positive">
+                    <i class="fas fa-arrow-up"></i> +8% so với hôm qua
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <div class="nav-tabs">
+            <button class="nav-tab active" onclick="switchTab('overview')">
+                <i class="fas fa-chart-pie"></i> Tổng quan
+            </button>
+            <button class="nav-tab" onclick="switchTab('trang')">
+                <i class="fas fa-user"></i> Seller Trang
+            </button>
+            <button class="nav-tab" onclick="switchTab('phuong')">
+                <i class="fas fa-user"></i> Seller Phượng
+            </button>
+            <button class="nav-tab" onclick="switchTab('chi')">
+                <i class="fas fa-user"></i> Seller Chi
+            </button>
+            <button class="nav-tab" onclick="switchTab('ffm')">
+                <i class="fas fa-calculator"></i> Nhập FFM
+            </button>
+            <button class="nav-tab" onclick="switchTab('reports')">
+                <i class="fas fa-chart-bar"></i> Báo cáo
+            </button>
+        </div>
+
+        <!-- Accounts Section -->
+        <div class="accounts-section" id="accountsSection">
+            <!-- Seller Trang -->
+            <div class="seller-section">
+                <div class="seller-header">
+                    <div class="seller-title">
+                        <i class="fas fa-crown" style="color: #fbbf24;"></i> SELLER TRANG
+                    </div>
+                    <div class="seller-stats">
+                        <span><i class="fas fa-store"></i> 12 tài khoản</span>
+                        <span><i class="fas fa-shopping-cart"></i> 34 đơn hôm nay</span>
+                        <span><i class="fas fa-dollar-sign"></i> $1,245 doanh thu</span>
+                    </div>
+                </div>
+                <div class="accounts-grid" id="trangAccounts">
+                    <!-- Accounts sẽ được tạo bằng JavaScript -->
+                </div>
+            </div>
+
+            <!-- Seller Phượng -->
+            <div class="seller-section">
+                <div class="seller-header">
+                    <div class="seller-title">
+                        <i class="fas fa-gem" style="color: #8b5cf6;"></i> SELLER PHƯỢNG
+                    </div>
+                    <div class="seller-stats">
+                        <span><i class="fas fa-store"></i> 10 tài khoản</span>
+                        <span><i class="fas fa-shopping-cart"></i> 28 đơn hôm nay</span>
+                        <span><i class="fas fa-dollar-sign"></i> $987 doanh thu</span>
+                    </div>
+                </div>
+                <div class="accounts-grid" id="phuongAccounts">
+                    <!-- Accounts sẽ được tạo bằng JavaScript -->
+                </div>
+            </div>
+
+            <!-- Seller Chi -->
+            <div class="seller-section">
+                <div class="seller-header">
+                    <div class="seller-title">
+                        <i class="fas fa-star" style="color: #06b6d4;"></i> SELLER CHI
+                    </div>
+                    <div class="seller-stats">
+                        <span><i class="fas fa-store"></i> 10 tài khoản</span>
+                        <span><i class="fas fa-shopping-cart"></i> 31 đơn hôm nay</span>
+                        <span><i class="fas fa-dollar-sign"></i> $1,156 doanh thu</span>
+                    </div>
+                </div>
+                <div class="accounts-grid" id="chiAccounts">
+                    <!-- Accounts sẽ được tạo bằng JavaScript -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Mock data cho demo
+        const mockData = {
+            trang: [
+                { id: 'TTUS001', name: 'Shop Trang 01', paid: 234, processing: 156, onHold: 890, orders: 12, status: 'active', updated: '14:30' },
+                { id: 'TTUS002', name: 'Shop Trang 02', paid: 189, processing: 234, onHold: 567, orders: 8, status: 'active', updated: '14:28' },
+                { id: 'TTUS003', name: 'Shop Trang 03', paid: 156, processing: 89, onHold: 445, orders: 5, status: 'warning', updated: '14:25' },
+                { id: 'TTUS004', name: 'Shop Trang 04', paid: 298, processing: 178, onHold: 789, orders: 15, status: 'active', updated: '14:32' },
+                { id: 'TTUS005', name: 'Shop Trang 05', paid: 176, processing: 145, onHold: 623, orders: 9, status: 'active', updated: '14:29' },
+                { id: 'TTUS006', name: 'Shop Trang 06', paid: 0, processing: 0, onHold: 0, orders: 0, status: 'error', updated: 'ERROR' },
+                { id: 'TTUS007', name: 'Shop Trang 07', paid: 223, processing: 167, onHold: 512, orders: 11, status: 'active', updated: '14:31' },
+                { id: 'TTUS008', name: 'Shop Trang 08', paid: 267, processing: 189, onHold: 734, orders: 13, status: 'active', updated: '14:27' },
+                { id: 'TTUS009', name: 'Shop Trang 09', paid: 145, processing: 123, onHold: 456, orders: 7, status: 'active', updated: '14:26' },
+                { id: 'TTUS010', name: 'Shop Trang 10', paid: 198, processing: 156, onHold: 589, orders: 10, status: 'active', updated: '14:33' },
+                { id: 'TTUS011', name: 'Shop Trang 11', paid: 289, processing: 201, onHold: 823, orders: 16, status: 'active', updated: '14:30' },
+                { id: 'TTUS012', name: 'Shop Trang 12', paid: 234, processing: 167, onHold: 678, orders: 12, status: 'active', updated: '14:28' }
+            ],
+            phuong: [
+                { id: 'TTUS013', name: 'Shop Phượng 01', paid: 198, processing: 134, onHold: 567, orders: 9, status: 'active', updated: '14:29' },
+                { id: 'TTUS014', name: 'Shop Phượng 02', paid: 245, processing: 178, onHold: 689, orders: 12, status: 'active', updated: '14:31' },
+                { id: 'TTUS015', name: 'Shop Phượng 03', paid: 167, processing: 123, onHold: 445, orders: 7, status: 'warning', updated: '14:24' },
+                { id: 'TTUS016', name: 'Shop Phượng 04', paid: 223, processing: 156, onHold: 612, orders: 11, status: 'active', updated: '14:32' },
+                { id: 'TTUS017', name: 'Shop Phượng 05', paid: 189, processing: 145, onHold: 534, orders: 8, status: 'active', updated: '14:27' },
+                { id: 'TTUS018', name: 'Shop Phượng 06', paid: 276, processing: 189, onHold: 723, orders: 14, status: 'active', updated: '14:30' },
+                { id: 'TTUS019', name: 'Shop Phượng 07', paid: 156, processing: 112, onHold: 467, orders: 6, status: 'active', updated: '14:26' },
+                { id: 'TTUS020', name: 'Shop Phượng 08', paid: 234, processing: 167, onHold: 589, orders: 10, status: 'active', updated: '14:33' },
+                { id: 'TTUS021', name: 'Shop Phượng 09', paid: 201, processing: 134, onHold: 512, orders: 9, status: 'active', updated: '14:28' },
+                { id: 'TTUS022', name: 'Shop Phượng 10', paid: 145, processing: 98, onHold: 423, orders: 5, status: 'warning', updated: '14:25' }
+            ],
+            chi: [
+                { id: 'TTUS023', name: 'Shop Chi 01', paid: 267, processing: 189, onHold: 734, orders: 13, status: 'active', updated: '14:31' },
+                { id: 'TTUS024', name: 'Shop Chi 02', paid: 198, processing: 145, onHold: 567, orders: 9, status: 'active', updated: '14:29' },
+                { id: 'TTUS025', name: 'Shop Chi 03', paid: 234, processing: 167, onHold: 623, orders: 11, status: 'active', updated: '14:30' },
+                { id: 'TTUS026', name: 'Shop Chi 04', paid: 289, processing: 201, onHold: 789, orders: 15, status: 'active', updated: '14:32' },
+                { id: 'TTUS027', name: 'Shop Chi 05', paid: 156, processing: 123, onHold: 456, orders: 7, status: 'active', updated: '14:27' },
+                { id: 'TTUS028', name: 'Shop Chi 06', paid: 223, processing: 156, onHold: 612, orders: 10, status: 'active', updated: '14:28' },
+                { id: 'TTUS029', name: 'Shop Chi 07', paid: 245, processing: 178, onHold: 689, orders: 12, status: 'active', updated: '14:33' },
+                { id: 'TTUS030', name: 'Shop Chi 08', paid: 176, processing: 134, onHold: 523, orders: 8, status: 'warning', updated: '14:26' },
+                { id: 'TTUS031', name: 'Shop Chi 09', paid: 201, processing: 145, onHold: 578, orders: 9, status: 'active', updated: '14:29' },
+                { id: 'TTUS032', name: 'Shop Chi 10', paid: 189, processing: 112, onHold: 467, orders: 6, status: 'active', updated: '14:25' }
+            ]
+        };
+
+        // Tạo account card
+        function createAccountCard(account) {
+            return `
+                <div class="account-card status-${account.status}" onclick="viewAccountDetails('${account.id}')">
+                    <div class="account-header">
+                        <div class="account-name">${account.id}</div>
+                        <div class="status-indicator ${account.status}"></div>
+                    </div>
+                    <div class="account-balance">
+                        <div class="balance-item">
+                            <div class="balance-label">Paid</div>
+                            <div class="balance-value">$${account.paid}</div>
+                        </div>
+                        <div class="balance-item">
+                            <div class="balance-label">Processing</div>
+                            <div class="balance-value">$${account.processing}</div>
+                        </div>
+                        <div class="balance-item">
+                            <div class="balance-label">On Hold</div>
+                            <div class="balance-value">$${account.onHold}</div>
+                        </div>
+                        <div class="balance-item">
+                            <div class="balance-label">Total</div>
+                            <div class="balance-value">$${account.paid + account.processing + account.onHold}</div>
+                        </div>
+                    </div>
+                    <div class="account-orders">
+                        <i class="fas fa-shopping-cart"></i> ${account.orders} đơn hôm nay
+                    </div>
+                    <div class="account-updated">
+                        Cập nhật: ${account.updated}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Render accounts
+        function renderAccounts() {
+            document.getElementById('trangAccounts').innerHTML = 
+                mockData.trang.map(createAccountCard).join('');
+            
+            document.getElementById('phuongAccounts').innerHTML = 
+                mockData.phuong.map(createAccountCard).join('');
+            
+            document.getElementById('chiAccounts').innerHTML = 
+                mockData.chi.map(createAccountCard).join('');
+        }
+
+        // Switch tabs
+        function switchTab(tab) {
+            // Update active tab
+            document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+            event.target.classList.add('active');
+
+            // Show/hide sections based on tab
+            // Tạm thời chỉ log, sau sẽ implement đầy đủ
+            console.log('Switched to tab:', tab);
+        }
+
+        // View account details
+        function viewAccountDetails(accountId) {
+            alert(`Xem chi tiết tài khoản: ${accountId}\n\nTính năng này sẽ được phát triển sau!`);
+        }
+
+        // Update last update time
+        function updateLastUpdateTime() {
+            const now = new Date();
+            const formatted = now.toLocaleDateString('vi-VN') + ' - ' + 
+                             now.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'});
+            document.getElementById('lastUpdate').textContent = formatted;
+        }
+
+        // Initialize dashboard
+        function initDashboard() {
+            renderAccounts();
+            updateLastUpdateTime();
+            
+            // Update time every minute
+            setInterval(updateLastUpdateTime, 60000);
+        }
+
+        // Start dashboard when page loads
+        document.addEventListener('DOMContentLoaded', initDashboard);
+    </script>
+</body>
+</html>
